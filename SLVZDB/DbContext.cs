@@ -200,7 +200,7 @@ public abstract class DbContext<TModel>
         return objects;
     }
 
-    public TModel Get(dynamic Key)
+    public TModel Get(dynamic RecordKey)
     {
         if (ModelType == null)
             throw new InvalidOperationException("Model type is not set.");
@@ -209,7 +209,7 @@ public abstract class DbContext<TModel>
             throw new InvalidOperationException($"This configuration only works with model type {ModelType.Name}.");
 
         var key = Activator.CreateInstance(ModelType.GetProperty(KeyName).PropertyType);
-        key = Convert.ChangeType(key, key.GetType());
+        key = Convert.ChangeType(RecordKey, key.GetType());
 
         var instance = Activator.CreateInstance(ModelType);
 
