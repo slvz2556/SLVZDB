@@ -62,7 +62,7 @@ class myDB : DbContext<myModel>
 {
     public override void Configuration()
     {
-        SetConfig($"{Environment.CurrentDirectory}/slvz.db", "ID");
+        SetConfig(Path.Combine(AppContext.BaseDirectory, "slvz.db"), "ID");
                   //Database full path                      //Variable name to use as ID to find models
     }
 }

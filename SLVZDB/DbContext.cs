@@ -55,10 +55,10 @@ public abstract class DbContext<TModel>
                 {
                     if (prop.Name != KeyName)
                     {
-                        string value = ModelType.GetProperty(prop.Name).GetValue(model).ToString();
+                        var value = ModelType.GetProperty(prop.Name)?.GetValue(model)?.ToString();
                         var type = prop.PropertyType;
 
-                        if (type == typeof(string))
+                        if (type == typeof(string) && !string.IsNullOrEmpty(value))
                             value = value.Replace("\n", "<db.break/>");
 
                         str += $"<db.{prop.Name}>{value}</db.{prop.Name}><db.br/>";
@@ -108,10 +108,10 @@ public abstract class DbContext<TModel>
                     {
                         if (prop.Name != KeyName)
                         {
-                            string value = ModelType.GetProperty(prop.Name).GetValue(model).ToString();
+                            var value = ModelType.GetProperty(prop.Name)?.GetValue(model)?.ToString();
                             var type = prop.PropertyType;
 
-                            if (type == typeof(string))
+                            if (type == typeof(string) && !string.IsNullOrEmpty(value))
                                 value = value.Replace("\n", "<db.break/>");
 
                             str += $"<db.{prop.Name}>{value}</db.{prop.Name}><db.br/>";
@@ -200,16 +200,13 @@ public abstract class DbContext<TModel>
         return objects;
     }
 
-    public TModel Get(dynamic RecordKey)
+    public TModel Get<T>(T id)
     {
         if (ModelType == null)
             throw new InvalidOperationException("Model type is not set.");
 
         if (typeof(TModel) != ModelType)
             throw new InvalidOperationException($"This configuration only works with model type {ModelType.Name}.");
-
-        var key = Activator.CreateInstance(ModelType.GetProperty(KeyName).PropertyType);
-        key = Convert.ChangeType(RecordKey, key.GetType());
 
         var instance = Activator.CreateInstance(ModelType);
 
@@ -224,7 +221,7 @@ public abstract class DbContext<TModel>
 
                 string line = reader.ReadLine();
 
-                if (line.StartsWith($"<db.{KeyName}>{key}</db.{KeyName}>"))
+                if (line.StartsWith($"<db.{KeyName}>{id}</db.{KeyName}>"))
                 {
                     foreach (var parameter in line.Split("<db.br/>"))
                     {
@@ -269,13 +266,10 @@ public abstract class DbContext<TModel>
         return (TModel)Convert.ChangeType(instance, ModelType);
     }
 
-    public void Remove(dynamic Key)
+    public void Remove<T>(T id)
     {
         if (ModelType == null)
             throw new InvalidOperationException("Model type is not set.");
-
-        var key = Activator.CreateInstance(ModelType.GetProperty(KeyName).PropertyType);
-        key = Convert.ChangeType(key, key.GetType());
 
         if (File.Exists(FilePath))
         {
@@ -288,7 +282,7 @@ public abstract class DbContext<TModel>
             while (reader.Peek() != -1)
             {
                 string line = reader.ReadLine();
-                if (!line.StartsWith($"<db.{KeyName}>{key}</db.{KeyName}>"))
+                if (!line.StartsWith($"<db.{KeyName}>{id}</db.{KeyName}>"))
                     writer.WriteLine(line);
             }
 
@@ -339,10 +333,10 @@ public abstract class DbContext<TModel>
                     {
                         if (prop.Name != KeyName)
                         {
-                            string value = ModelType.GetProperty(prop.Name).GetValue(model).ToString();
+                            var value = ModelType.GetProperty(prop.Name)?.GetValue(model)?.ToString();
                             var type = prop.PropertyType;
 
-                            if (type == typeof(string))
+                            if (type == typeof(string) && !string.IsNullOrEmpty(value))
                                 value = value.Replace("\n", "<db.break/>");
 
                             str += $"<db.{prop.Name}>{value}</db.{prop.Name}><db.br/>";
