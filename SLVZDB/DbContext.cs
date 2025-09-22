@@ -360,6 +360,53 @@ public abstract class DbContext<TModel>
         }
 
     }
+
+    public T AvailablePrimaryKey<T>(List<T> recordKeys)
+    {
+        if (ModelType == null)
+            throw new InvalidOperationException("Model type is not set.");
+        if (recordKeys.Count() > 0)
+        {
+            try
+            {
+                if (!File.Exists(FilePath))
+                    return recordKeys.First();
+
+                using FileStream file = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
+                List<T> removal = new List<T>();
+
+                using (var reader = new StreamReader(file))
+                {
+                    while (reader.Peek() != -1)
+                    {
+                        string line = reader.ReadLine();
+
+                        foreach (var key in recordKeys)
+                        {
+                            if (line.StartsWith($"<db.{KeyName}>{key}</db.{KeyName}>"))
+                                removal.Add(key);
+                        }
+
+                        foreach (var item in removal)
+                            recordKeys.Remove(item);
+                    }
+                    reader.Close();
+                }
+                file.Close();
+
+                if (recordKeys.Count() == 0)
+                    return default(T);
+                else
+                    return recordKeys.First();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidDataException(ex.Message);
+            }
+        }
+        else
+            return default(T);
+    }
 }
 
 //SLVZ
