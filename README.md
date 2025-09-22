@@ -149,6 +149,12 @@ Updates an existing model in the database.
 
 ---
 
+### `AvailablePrimaryKey(List<T> recordKeys)`
+Return the first available primary key from database. You can send it a list if id's and it will return you the first ID that hasn't used
+
+
+---
+
 ### `Remove(T id)`
 Deletes a model from the database by its key.
 
