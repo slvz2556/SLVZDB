@@ -130,7 +130,7 @@ Retrieves all models stored in the database.
 
 ---
 
-### `TModel Get(dynamic key)`
+### `TModel Get(T id)`
 Retrieves a single model by its key property.
 
 - **Parameters:**  
@@ -149,7 +149,7 @@ Updates an existing model in the database.
 
 ---
 
-### `Remove(dynamic key)`
+### `Remove(T id)`
 Deletes a model from the database by its key.
 
 - **Parameters:**  
